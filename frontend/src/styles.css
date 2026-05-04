@@ -1,0 +1,23 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+h1 { font-size: 2rem; margin-bottom: 0.25rem; color: #38bdf8; }
+.subtitulo { color: #94a3b8; margin-bottom: 2rem; }
+.card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
+h2 { color: #38bdf8; margin-bottom: 1rem; font-size: 1.2rem; }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+form input { grid-column: span 1; }
+form button { grid-column: span 2; }
+input { width: 100%; padding: 0.6rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 0.95rem; }
+input:focus { outline: none; border-color: #38bdf8; }
+button { padding: 0.7rem 1.2rem; background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+button:hover { background: #0ea5e9; }
+button.danger { background: #ef4444; color: white; }
+button.danger:hover { background: #dc2626; }
+.livro { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #0f172a; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid #334155; }
+.livro-info strong { color: #f1f5f9; display: block; margin-bottom: 0.25rem; }
+.livro-info small { color: #94a3b8; }
+.livro-acoes { display: flex; gap: 0.5rem; }
+.livro-acoes button { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+.vazio { text-align: center; color: #64748b; padding: 2rem; }
+.erro { background: #7f1d1d; color: #fecaca; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; }
