@@ -1,23 +1,198 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
-h1 { font-size: 2rem; margin-bottom: 0.25rem; color: #38bdf8; }
-.subtitulo { color: #94a3b8; margin-bottom: 2rem; }
-.card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
-h2 { color: #38bdf8; margin-bottom: 1rem; font-size: 1.2rem; }
-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-form input { grid-column: span 1; }
-form button { grid-column: span 2; }
-input { width: 100%; padding: 0.6rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 0.95rem; }
-input:focus { outline: none; border-color: #38bdf8; }
-button { padding: 0.7rem 1.2rem; background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
-button:hover { background: #0ea5e9; }
-button.danger { background: #ef4444; color: white; }
-button.danger:hover { background: #dc2626; }
-.livro { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #0f172a; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid #334155; }
-.livro-info strong { color: #f1f5f9; display: block; margin-bottom: 0.25rem; }
-.livro-info small { color: #94a3b8; }
-.livro-acoes { display: flex; gap: 0.5rem; }
-.livro-acoes button { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
-.vazio { text-align: center; color: #64748b; padding: 2rem; }
-.erro { background: #7f1d1d; color: #fecaca; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+/* TITULOS */
+h1 {
+  font-size: 2.3rem;
+  margin-bottom: 0.3rem;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.subtitulo {
+  color: #94a3b8;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+/* CARDS */
+.card {
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+}
+
+h2 {
+  color: #38bdf8;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* FORM */
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+form input {
+  grid-column: span 1;
+}
+
+form button {
+  grid-column: span 2;
+}
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  background: #0b1220;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+/* BOTÕES */
+button {
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+button.danger:hover {
+  filter: brightness(1.1);
+}
+
+/* LIVROS */
+.livro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  border: 1px solid #334155;
+  transition: all 0.2s ease;
+}
+
+.livro:hover {
+  border-color: #38bdf8;
+  transform: scale(1.01);
+}
+
+.livro-info strong {
+  color: #f1f5f9;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.livro-info small {
+  color: #94a3b8;
+}
+
+.livro-acoes {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.livro-acoes button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+/* ESTADOS */
+.vazio {
+  text-align: center;
+  color: #64748b;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.erro {
+  background: rgba(127, 29, 29, 0.8);
+  color: #fecaca;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #ef4444;
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+
+  form button {
+    grid-column: span 1;
+  }
+
+  .livro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .livro-acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
