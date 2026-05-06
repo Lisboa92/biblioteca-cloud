@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API = "/api/livros";
+const API = "https://biblioteca-lisboa.up.railway.app/api/livros";
 
 export default function App() {
   const [livros, setLivros] = useState([]);
