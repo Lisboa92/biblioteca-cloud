@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📚 Sistema de Gestão de Biblioteca — Lisboa
 
 Trabalho prático individual · UTDEG · Licenciatura em Informática · 3.º Ano · 2026
@@ -117,3 +118,7 @@ biblioteca-cloud/
 
 ## 👤 Autor
 **[Lisboa Paulo Cossa]** · 4º Ano · Licenciatura em Informática · UTDEG
+=======
+# biblioteca-cloud
+Trabalho da disciplina de Computacao na Nuvem (UTDEG - 2026)
+>>>>>>> f5a63f6d44dbcb970c83bd84ad77653a53a2419a
