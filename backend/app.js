@@ -8,25 +8,43 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ── CONFIGURAÇÃO DA BASE DE DADOS (PRODUÇÃO)
+// ── CONFIGURAÇÃO DA BASE DE DADOS
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000
 });
 
-// ── TESTE DE SAÚDE (não bloqueia arranque)
-app.get("/api/health", (_, res) => {
-  res.json({ status: "ok" });
+// ── TESTE DE SAÚDE
+app.get("/api/health", async (_, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({ status: "ok", db: "connected" });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      db: "not connected",
+      erro: e.message
+    });
+  }
 });
 
 // ── READ — listar livros
 app.get("/api/livros", async (_, res) => {
   try {
-    const r = await pool.query("SELECT * FROM livros ORDER BY id DESC");
+    const r = await pool.query(
+      "SELECT * FROM livros ORDER BY id DESC"
+    );
     res.json(r.rows);
   } catch (e) {
-    console.error("ERRO LISTAR:", e);
-    res.status(500).json({ erro: e.message });
+    console.error("ERRO LISTAR LIVROS:", e.message);
+
+    res.status(500).json({
+      erro: "Erro ao carregar livros",
+      detalhe: e.message
+    });
   }
 });
 
@@ -35,7 +53,9 @@ app.post("/api/livros", async (req, res) => {
   const { titulo, autor, ano, genero } = req.body;
 
   if (!titulo || !autor) {
-    return res.status(400).json({ erro: "Título e autor são obrigatórios" });
+    return res.status(400).json({
+      erro: "Título e autor são obrigatórios"
+    });
   }
 
   try {
@@ -48,8 +68,12 @@ app.post("/api/livros", async (req, res) => {
 
     res.status(201).json(r.rows[0]);
   } catch (e) {
-    console.error("ERRO CRIAR:", e);
-    res.status(500).json({ erro: e.message });
+    console.error("ERRO CRIAR:", e.message);
+
+    res.status(500).json({
+      erro: "Erro ao criar livro",
+      detalhe: e.message
+    });
   }
 });
 
@@ -67,13 +91,19 @@ app.put("/api/livros/:id", async (req, res) => {
     );
 
     if (!r.rows.length) {
-      return res.status(404).json({ erro: "Livro não encontrado" });
+      return res.status(404).json({
+        erro: "Livro não encontrado"
+      });
     }
 
     res.json(r.rows[0]);
   } catch (e) {
-    console.error("ERRO UPDATE:", e);
-    res.status(500).json({ erro: e.message });
+    console.error("ERRO UPDATE:", e.message);
+
+    res.status(500).json({
+      erro: "Erro ao atualizar livro",
+      detalhe: e.message
+    });
   }
 });
 
@@ -86,7 +116,9 @@ app.delete("/api/livros/:id", async (req, res) => {
     );
 
     if (!r.rows.length) {
-      return res.status(404).json({ erro: "Livro não encontrado" });
+      return res.status(404).json({
+        erro: "Livro não encontrado"
+      });
     }
 
     res.json({
@@ -94,12 +126,16 @@ app.delete("/api/livros/:id", async (req, res) => {
       livro: r.rows[0]
     });
   } catch (e) {
-    console.error("ERRO DELETE:", e);
-    res.status(500).json({ erro: e.message });
+    console.error("ERRO DELETE:", e.message);
+
+    res.status(500).json({
+      erro: "Erro ao apagar livro",
+      detalhe: e.message
+    });
   }
 });
 
-// ── ARRANQUE DO SERVIDOR (NÃO BLOQUEIA BD)
+// ── ARRANQUE
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
