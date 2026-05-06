@@ -136,9 +136,18 @@ app.delete("/api/livros/:id", async (req, res) => {
 // ── ARRANQUE DO SERVIDOR
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, "0.0.0.0", async () => {
-  console.log(`🚀 API a correr em :${PORT}`);
+const start = async () => {
+  try {
+    await initDB(); // garante BD pronta antes de subir API
 
-  // 🔥 IMPORTANTE: inicializa BD aqui
-  await initDB();
-});
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`🚀 API a correr em :${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("❌ Erro ao iniciar servidor:", err.message);
+    process.exit(1);
+  }
+};
+
+start();
