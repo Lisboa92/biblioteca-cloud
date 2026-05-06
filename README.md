@@ -51,13 +51,13 @@ docker compose down -v            # parar E apagar a BD (reset)
 
 ## 🌐 Deploy no Railway (passo a passo)
 
-1. Cria conta em [railway.app](https://railway.app) (login com GitHub)
-2. Faz `git push` deste projeto para um repositório teu no GitHub
+1. Criei conta em [railway.app](https://railway.app) (login com GitHub)
+2. Fiz `git push` deste projeto para um repositório teu no GitHub
 3. No Railway: **New Project → Deploy from GitHub repo**
 4. Railway deteta o `docker-compose.yml` e cria os 3 serviços
-5. Em cada serviço, define as variáveis de ambiente (já estão no compose)
+5. Em cada serviço, defini as variáveis de ambiente (já estão no compose)
 6. Em **Settings → Networking → Generate Domain** no serviço `frontend`
-7. Obténs um URL público tipo `https://biblioteca-xxxx.railway.app`
+7. Obtive e personalizei um URL público para `(https://biblioteca-lisboa.up.railway.app/)`
 
 ## 📋 Funcionalidades (CRUD completo)
 
