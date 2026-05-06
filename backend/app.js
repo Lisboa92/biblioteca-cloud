@@ -8,34 +8,36 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ── CONFIGURAÇÃO DA BASE DE DADOS
+// ── CONFIGURAÇÃO DA BASE DE DADOS (RAILWAY)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// ── CRIAR TABELA AUTOMATICAMENTE (AUTO-SETUP)
-async function initDB() {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS livros (
-        id SERIAL PRIMARY KEY,
-        titulo VARCHAR(200) NOT NULL,
-        autor VARCHAR(150) NOT NULL,
-        ano INTEGER,
-        genero VARCHAR(80),
-        disponivel BOOLEAN DEFAULT TRUE,
-        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    console.log("✔ Tabela 'livros' pronta");
-  } catch (e) {
-    console.error("❌ Erro ao criar tabela:", e.message);
-  }
+// ── TESTE DE CONEXÃO BD
+async function checkDB() {
+  await pool.query("SELECT 1");
+  console.log("✔ Base de dados conectada");
 }
 
-// ── TESTE DE SAÚDE
+// ── CRIAR TABELA AUTOMATICAMENTE
+async function initDB() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS livros (
+      id SERIAL PRIMARY KEY,
+      titulo VARCHAR(200) NOT NULL,
+      autor VARCHAR(150) NOT NULL,
+      ano INTEGER,
+      genero VARCHAR(80),
+      disponivel BOOLEAN DEFAULT TRUE,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  console.log("✔ Tabela livros pronta");
+}
+
+// ── HEALTH CHECK
 app.get("/api/health", async (_, res) => {
   try {
     await pool.query("SELECT 1");
@@ -49,20 +51,18 @@ app.get("/api/health", async (_, res) => {
   }
 });
 
-// ── READ — listar livros
+// ── LISTAR LIVROS
 app.get("/api/livros", async (_, res) => {
   try {
-    const r = await pool.query(
-      "SELECT * FROM livros ORDER BY id DESC"
-    );
+    const r = await pool.query("SELECT * FROM livros ORDER BY id DESC");
     res.json(r.rows);
   } catch (e) {
     console.error("ERRO LISTAR:", e.message);
-    res.status(500).json({ erro: e.message });
+    res.status(500).json({ erro: "Erro ao carregar livros" });
   }
 });
 
-// ── CREATE — inserir livro
+// ── CRIAR LIVRO
 app.post("/api/livros", async (req, res) => {
   const { titulo, autor, ano, genero } = req.body;
 
@@ -83,11 +83,11 @@ app.post("/api/livros", async (req, res) => {
     res.status(201).json(r.rows[0]);
   } catch (e) {
     console.error("ERRO CRIAR:", e.message);
-    res.status(500).json({ erro: e.message });
+    res.status(500).json({ erro: "Erro ao criar livro" });
   }
 });
 
-// ── UPDATE
+// ── ATUALIZAR LIVRO
 app.put("/api/livros/:id", async (req, res) => {
   const { titulo, autor, ano, genero, disponivel } = req.body;
 
@@ -107,11 +107,11 @@ app.put("/api/livros/:id", async (req, res) => {
     res.json(r.rows[0]);
   } catch (e) {
     console.error("ERRO UPDATE:", e.message);
-    res.status(500).json({ erro: e.message });
+    res.status(500).json({ erro: "Erro ao atualizar livro" });
   }
 });
 
-// ── DELETE
+// ── APAGAR LIVRO
 app.delete("/api/livros/:id", async (req, res) => {
   try {
     const r = await pool.query(
@@ -129,23 +129,24 @@ app.delete("/api/livros/:id", async (req, res) => {
     });
   } catch (e) {
     console.error("ERRO DELETE:", e.message);
-    res.status(500).json({ erro: e.message });
+    res.status(500).json({ erro: "Erro ao apagar livro" });
   }
 });
 
-// ── ARRANQUE DO SERVIDOR
+// ── ARRANQUE SEGURO (RAILWAY)
 const PORT = process.env.PORT || 3000;
 
 const start = async () => {
   try {
-    await initDB(); // garante BD pronta antes de subir API
+    await checkDB();   // garante ligação à BD
+    await initDB();    // cria tabela se não existir
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 API a correr em :${PORT}`);
     });
 
   } catch (err) {
-    console.error("❌ Erro ao iniciar servidor:", err.message);
+    console.error("❌ ERRO AO INICIAR:", err.message);
     process.exit(1);
   }
 };
