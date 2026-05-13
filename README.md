@@ -58,6 +58,7 @@ docker compose down -v            # parar E apagar a BD (reset)
 5. Em cada serviço, defini as variáveis de ambiente (já estão no compose)
 6. Em **Settings → Networking → Generate Domain** no serviço `frontend`
 7. Obtive e personalizei um URL público para `(https://biblioteca-lisboa.up.railway.app/)`
+8. Credenciais: usuario: admin / senha: 1234
 
 ## 📋 Funcionalidades (CRUD completo)
 
