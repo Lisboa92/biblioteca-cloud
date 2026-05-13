@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 # 📚 Sistema de Gestão de Biblioteca — Lisboa
 
-Trabalho prático individual · UTDEG · Licenciatura em Informática · 3.º Ano · 2026
+Trabalho prático individual · UTDEG · Licenciatura em Informática · 4.º Ano · 2026
 
 Sistema de informação **em três camadas**, totalmente containerizado com **Docker** e preparado para deploy em nuvem (Railway / Render).
 
