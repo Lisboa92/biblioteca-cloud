@@ -5,7 +5,11 @@ const API = "https://backend-biblioteca-lisboa.up.railway.app/api/livros";
 export default function App() {
   // LOGIN
   const [logado, setLogado] = useState(false);
-  const [login, setLogin] = useState({ usuario: "", senha: "" });
+  const [login, setLogin] = useState({
+    usuario: "",
+    senha: "",
+  });
+
   const [erro, setErro] = useState("");
 
   // MENU
@@ -13,6 +17,8 @@ export default function App() {
 
   // DADOS
   const [livros, setLivros] = useState([]);
+  const [pesquisa, setPesquisa] = useState("");
+
   const [form, setForm] = useState({
     titulo: "",
     autor: "",
@@ -21,6 +27,9 @@ export default function App() {
   });
 
   const [editandoId, setEditandoId] = useState(null);
+
+  // POPUP
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   // LOGIN
   const entrar = (e) => {
@@ -34,51 +43,134 @@ export default function App() {
     }
   };
 
+  // SAIR
   const sair = () => {
-    setLogado(false);
-    setLogin({ usuario: "", senha: "" });
+    const confirmar = window.confirm("Deseja realmente sair do sistema?");
+
+    if (confirmar) {
+      setLogado(false);
+      setLogin({
+        usuario: "",
+        senha: "",
+      });
+    }
   };
 
   // CARREGAR LIVROS
   const carregar = async () => {
-    const r = await fetch(API);
-    const data = await r.json();
-    setLivros(data);
+    try {
+      const r = await fetch(API);
+      const data = await r.json();
+      setLivros(data);
+    } catch {
+      setErro("Erro ao carregar livros");
+    }
   };
 
   useEffect(() => {
     if (logado) carregar();
   }, [logado]);
 
-  // SUBMIT LIVRO
+  // ABRIR MODAL NOVO
+  const novoLivro = () => {
+    setForm({
+      titulo: "",
+      autor: "",
+      ano: "",
+      genero: "",
+    });
+
+    setEditandoId(null);
+    setMostrarModal(true);
+  };
+
+  // EDITAR
+  const editar = (livro) => {
+    setForm({
+      titulo: livro.titulo,
+      autor: livro.autor,
+      ano: livro.ano || "",
+      genero: livro.genero || "",
+    });
+
+    setEditandoId(livro.id);
+    setMostrarModal(true);
+  };
+
+  // SALVAR
   const submeter = async (e) => {
     e.preventDefault();
+
+    const confirmar = window.confirm(
+      editandoId
+        ? "Deseja atualizar este livro?"
+        : "Deseja cadastrar este livro?"
+    );
+
+    if (!confirmar) return;
 
     const metodo = editandoId ? "PUT" : "POST";
     const url = editandoId ? `${API}/${editandoId}` : API;
 
     await fetch(url, {
       method: metodo,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         ...form,
         ano: form.ano ? parseInt(form.ano) : null,
       }),
     });
 
-    setForm({ titulo: "", autor: "", ano: "", genero: "" });
+    alert(
+      editandoId
+        ? "Livro atualizado com sucesso!"
+        : "Livro cadastrado com sucesso!"
+    );
+
+    setForm({
+      titulo: "",
+      autor: "",
+      ano: "",
+      genero: "",
+    });
+
     setEditandoId(null);
+    setMostrarModal(false);
     carregar();
-    setMenu("livros");
   };
+
+  // APAGAR
+  const apagar = async (id) => {
+    const confirmar = window.confirm(
+      "Deseja realmente apagar este livro?"
+    );
+
+    if (!confirmar) return;
+
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+    });
+
+    alert("Livro apagado com sucesso!");
+    carregar();
+  };
+
+  // PESQUISA
+  const livrosFiltrados = livros.filter((l) =>
+    l.titulo.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    l.autor.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    (l.genero || "").toLowerCase().includes(pesquisa.toLowerCase())
+  );
 
   // LOGIN SCREEN
   if (!logado) {
     return (
       <div className="login-container">
-        <div className="card">
-          <h1>📚 Biblioteca - Lisboa Cossa</h1>
-          <p>Acesso restrito</p>
+        <div className="login-card">
+          <h1>📚 Biblioteca Lisboa Cossa</h1>
+          <p>Sistema Administrativo de Gestão de Livros</p>
 
           {erro && <div className="erro">{erro}</div>}
 
@@ -87,7 +179,10 @@ export default function App() {
               placeholder="Usuário"
               value={login.usuario}
               onChange={(e) =>
-                setLogin({ ...login, usuario: e.target.value })
+                setLogin({
+                  ...login,
+                  usuario: e.target.value,
+                })
               }
             />
 
@@ -96,18 +191,23 @@ export default function App() {
               placeholder="Senha"
               value={login.senha}
               onChange={(e) =>
-                setLogin({ ...login, senha: e.target.value })
+                setLogin({
+                  ...login,
+                  senha: e.target.value,
+                })
               }
             />
 
-            <button type="submit">Entrar</button>
+            <button type="submit" className="login-btn">
+              Entrar
+            </button>
           </form>
         </div>
       </div>
     );
   }
 
-  // SISTEMA PRINCIPAL
+  // SISTEMA
   return (
     <div className="layout">
 
@@ -115,9 +215,17 @@ export default function App() {
       <aside className="sidebar">
         <h2>📚 Biblioteca</h2>
 
-        <button onClick={() => setMenu("livros")}>Livros</button>
-        <button onClick={() => setMenu("cadastro")}>Cadastrar</button>
-        <button onClick={() => setMenu("historico")}>Histórico</button>
+        <button onClick={() => setMenu("livros")}>
+          Lista de Livros
+        </button>
+
+        <button onClick={novoLivro}>
+          Cadastrar Livro
+        </button>
+
+        <button onClick={() => setMenu("historico")}>
+          Histórico
+        </button>
 
         <button onClick={sair} className="danger">
           Sair
@@ -132,73 +240,57 @@ export default function App() {
           <div className="card">
             <h2>Lista de Livros</h2>
 
-            {livros.length === 0 && (
-              <p className="vazio">Nenhum livro encontrado</p>
+            <div className="top-actions">
+              <div className="search-box">
+                <input
+                  placeholder="Pesquisar por título, autor ou género..."
+                  value={pesquisa}
+                  onChange={(e) => setPesquisa(e.target.value)}
+                />
+              </div>
+
+              <button
+                className="novo-btn"
+                onClick={novoLivro}
+              >
+                + Novo Livro
+              </button>
+            </div>
+
+            {livrosFiltrados.length === 0 && (
+              <p className="vazio">
+                Nenhum livro encontrado
+              </p>
             )}
 
-            {livros.map((l) => (
+            {livrosFiltrados.map((l) => (
               <div className="livro" key={l.id}>
                 <div>
                   <strong>{l.titulo}</strong>
-                  <small>{l.autor} • {l.ano}</small>
+                  <small>
+                    {l.autor}
+                    {l.ano ? ` • ${l.ano}` : ""}
+                    {l.genero ? ` • ${l.genero}` : ""}
+                  </small>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setForm(l);
-                    setEditandoId(l.id);
-                    setMenu("cadastro");
-                  }}
-                >
-                  Editar
-                </button>
+                <div className="livro-acoes">
+                  <button
+                    className="btn-edit"
+                    onClick={() => editar(l)}
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    className="btn-danger"
+                    onClick={() => apagar(l.id)}
+                  >
+                    Apagar
+                  </button>
+                </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* CADASTRO */}
-        {menu === "cadastro" && (
-          <div className="card">
-            <h2>{editandoId ? "Editar Livro" : "Cadastrar Livro"}</h2>
-
-            <form onSubmit={submeter}>
-              <input
-                placeholder="Título"
-                value={form.titulo}
-                onChange={(e) =>
-                  setForm({ ...form, titulo: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Autor"
-                value={form.autor}
-                onChange={(e) =>
-                  setForm({ ...form, autor: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Ano"
-                value={form.ano}
-                onChange={(e) =>
-                  setForm({ ...form, ano: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Gênero"
-                value={form.genero}
-                onChange={(e) =>
-                  setForm({ ...form, genero: e.target.value })
-                }
-              />
-
-              <button type="submit">
-                {editandoId ? "Atualizar" : "Salvar"}
-              </button>
-            </form>
           </div>
         )}
 
@@ -211,8 +303,82 @@ export default function App() {
             </p>
           </div>
         )}
-
       </main>
+
+      {/* MODAL CADASTRO / EDIÇÃO */}
+      {mostrarModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>
+              {editandoId
+                ? "✏️ Editar Livro"
+                : "➕ Cadastrar Livro"}
+            </h2>
+
+            <form onSubmit={submeter}>
+              <input
+                placeholder="Título"
+                value={form.titulo}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    titulo: e.target.value,
+                  })
+                }
+                required
+              />
+
+              <input
+                placeholder="Autor"
+                value={form.autor}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    autor: e.target.value,
+                  })
+                }
+                required
+              />
+
+              <input
+                placeholder="Ano"
+                value={form.ano}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    ano: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Gênero"
+                value={form.genero}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    genero: e.target.value,
+                  })
+                }
+              />
+
+              <div className="modal-actions">
+                <button type="submit">
+                  {editandoId ? "Atualizar" : "Salvar"}
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={() => setMostrarModal(false)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
