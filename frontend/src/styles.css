@@ -273,3 +273,128 @@ button:hover {
   font-size: 14px;
   z-index: 100;
 }
+
+
+/* RESPONSIVIDADE */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+    padding: 1rem;
+  }
+
+  .footer {
+    left: 200px;
+  }
+
+  .novo-btn {
+    width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #334155;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .sidebar h2 {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar button {
+    flex: 1 1 45%;
+    text-align: center;
+  }
+
+  .sidebar .danger {
+    margin-top: 0;
+  }
+
+  .content {
+    padding: 1rem;
+    padding-bottom: 90px;
+  }
+
+  .top-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .novo-btn {
+    width: 100%;
+  }
+
+  .livro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .livro-acoes {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .livro-acoes button {
+    flex: 1;
+  }
+
+  .modal-content {
+    padding: 1.2rem;
+    max-width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  .footer {
+    left: 0;
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .login-card h1 {
+    font-size: 1.4rem;
+  }
+
+  .login-btn {
+    width: 100%;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  h1, h2 {
+    font-size: 1.2rem;
+  }
+
+  input,
+  button {
+    font-size: 14px;
+  }
+}
