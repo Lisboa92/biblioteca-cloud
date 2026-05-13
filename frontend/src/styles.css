@@ -94,6 +94,7 @@ body {
 .content {
   flex: 1;
   padding: 2rem;
+  padding-bottom: 80px;
 }
 
 /* CARD */
@@ -256,4 +257,19 @@ button:hover {
   text-align: center;
   padding: 2rem;
   font-size: 15px;
+}
+
+/* FOOTER */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 240px;
+  right: 0;
+  background: #0b1220;
+  border-top: 1px solid #334155;
+  padding: 12px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  z-index: 100;
 }
