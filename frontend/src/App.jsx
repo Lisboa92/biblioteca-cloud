@@ -157,8 +157,8 @@ export default function App() {
     return (
       <div className="login-container">
         <div className="login-card">
-          <h1>📚 Biblioteca Lisboa Cossa</h1>
-          <p>Sistema Administrativo de Gestão de Livros</p>
+          <h1>📚 Biblioteca</h1>
+          <p>Sistema de Gestão de Livros</p>
 
           {erro && <div className="erro">{erro}</div>}
 
