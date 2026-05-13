@@ -3,19 +3,11 @@ import { useEffect, useState } from "react";
 const API = "https://backend-biblioteca-lisboa.up.railway.app/api/livros";
 
 export default function App() {
-  // LOGIN
   const [logado, setLogado] = useState(false);
-  const [login, setLogin] = useState({
-    usuario: "",
-    senha: "",
-  });
-
+  const [login, setLogin] = useState({ usuario: "", senha: "" });
   const [erro, setErro] = useState("");
 
-  // MENU
   const [menu, setMenu] = useState("livros");
-
-  // DADOS
   const [livros, setLivros] = useState([]);
   const [pesquisa, setPesquisa] = useState("");
 
@@ -27,11 +19,10 @@ export default function App() {
   });
 
   const [editandoId, setEditandoId] = useState(null);
-
-  // POPUP
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  // LOGIN
+  const [historico, setHistorico] = useState([]);
+
   const entrar = (e) => {
     e.preventDefault();
 
@@ -43,20 +34,15 @@ export default function App() {
     }
   };
 
-  // SAIR
   const sair = () => {
     const confirmar = window.confirm("Deseja realmente sair do sistema?");
 
     if (confirmar) {
       setLogado(false);
-      setLogin({
-        usuario: "",
-        senha: "",
-      });
+      setLogin({ usuario: "", senha: "" });
     }
   };
 
-  // CARREGAR LIVROS
   const carregar = async () => {
     try {
       const r = await fetch(API);
@@ -71,20 +57,12 @@ export default function App() {
     if (logado) carregar();
   }, [logado]);
 
-  // ABRIR MODAL NOVO
   const novoLivro = () => {
-    setForm({
-      titulo: "",
-      autor: "",
-      ano: "",
-      genero: "",
-    });
-
+    setForm({ titulo: "", autor: "", ano: "", genero: "" });
     setEditandoId(null);
     setMostrarModal(true);
   };
 
-  // EDITAR
   const editar = (livro) => {
     setForm({
       titulo: livro.titulo,
@@ -97,7 +75,6 @@ export default function App() {
     setMostrarModal(true);
   };
 
-  // SALVAR
   const submeter = async (e) => {
     e.preventDefault();
 
@@ -123,26 +100,29 @@ export default function App() {
       }),
     });
 
+    setHistorico((prev) => [
+      {
+        titulo: form.titulo,
+        autor: form.autor,
+        acao: editandoId ? "Editado" : "Cadastrado",
+        data: new Date().toLocaleString(),
+      },
+      ...prev,
+    ]);
+
     alert(
       editandoId
         ? "Livro atualizado com sucesso!"
         : "Livro cadastrado com sucesso!"
     );
 
-    setForm({
-      titulo: "",
-      autor: "",
-      ano: "",
-      genero: "",
-    });
-
+    setForm({ titulo: "", autor: "", ano: "", genero: "" });
     setEditandoId(null);
     setMostrarModal(false);
     carregar();
   };
 
-  // APAGAR
-  const apagar = async (id) => {
+  const apagar = async (id, titulo, autor) => {
     const confirmar = window.confirm(
       "Deseja realmente apagar este livro?"
     );
@@ -153,18 +133,26 @@ export default function App() {
       method: "DELETE",
     });
 
+    setHistorico((prev) => [
+      {
+        titulo,
+        autor,
+        acao: "Apagado",
+        data: new Date().toLocaleString(),
+      },
+      ...prev,
+    ]);
+
     alert("Livro apagado com sucesso!");
     carregar();
   };
 
-  // PESQUISA
   const livrosFiltrados = livros.filter((l) =>
     l.titulo.toLowerCase().includes(pesquisa.toLowerCase()) ||
     l.autor.toLowerCase().includes(pesquisa.toLowerCase()) ||
     (l.genero || "").toLowerCase().includes(pesquisa.toLowerCase())
   );
 
-  // LOGIN SCREEN
   if (!logado) {
     return (
       <div className="login-container">
@@ -179,10 +167,7 @@ export default function App() {
               placeholder="Usuário"
               value={login.usuario}
               onChange={(e) =>
-                setLogin({
-                  ...login,
-                  usuario: e.target.value,
-                })
+                setLogin({ ...login, usuario: e.target.value })
               }
             />
 
@@ -191,10 +176,7 @@ export default function App() {
               placeholder="Senha"
               value={login.senha}
               onChange={(e) =>
-                setLogin({
-                  ...login,
-                  senha: e.target.value,
-                })
+                setLogin({ ...login, senha: e.target.value })
               }
             />
 
@@ -207,11 +189,8 @@ export default function App() {
     );
   }
 
-  // SISTEMA
   return (
     <div className="layout">
-
-      {/* SIDEBAR */}
       <aside className="sidebar">
         <h2>📚 Biblioteca</h2>
 
@@ -232,10 +211,7 @@ export default function App() {
         </button>
       </aside>
 
-      {/* CONTEÚDO */}
       <main className="content">
-
-        {/* LIVROS */}
         {menu === "livros" && (
           <div className="card">
             <h2>Lista de Livros</h2>
@@ -249,18 +225,13 @@ export default function App() {
                 />
               </div>
 
-              <button
-                className="novo-btn"
-                onClick={novoLivro}
-              >
+              <button className="novo-btn" onClick={novoLivro}>
                 + Novo Livro
               </button>
             </div>
 
             {livrosFiltrados.length === 0 && (
-              <p className="vazio">
-                Nenhum livro encontrado
-              </p>
+              <p className="vazio">Nenhum livro encontrado</p>
             )}
 
             {livrosFiltrados.map((l) => (
@@ -284,7 +255,7 @@ export default function App() {
 
                   <button
                     className="btn-danger"
-                    onClick={() => apagar(l.id)}
+                    onClick={() => apagar(l.id, l.titulo, l.autor)}
                   >
                     Apagar
                   </button>
@@ -294,25 +265,37 @@ export default function App() {
           </div>
         )}
 
-        {/* HISTÓRICO */}
         {menu === "historico" && (
           <div className="card">
-            <h2>Histórico</h2>
-            <p className="vazio">
-              Sistema de histórico em desenvolvimento...
-            </p>
+            <h2>📜 Histórico do Sistema</h2>
+
+            {historico.length === 0 ? (
+              <p className="vazio">
+                Ainda não existem registos no sistema.
+              </p>
+            ) : (
+              historico.map((item, index) => (
+                <div className="livro" key={index}>
+                  <div>
+                    <strong>{item.titulo}</strong>
+                    <small>
+                      {item.autor} • {item.acao}
+                    </small>
+                    <br />
+                    <small>{item.data}</small>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </main>
 
-      {/* MODAL CADASTRO / EDIÇÃO */}
       {mostrarModal && (
         <div className="modal">
           <div className="modal-content">
             <h2>
-              {editandoId
-                ? "✏️ Editar Livro"
-                : "➕ Cadastrar Livro"}
+              {editandoId ? "✏️ Editar Livro" : "➕ Cadastrar Livro"}
             </h2>
 
             <form onSubmit={submeter}>
@@ -320,10 +303,7 @@ export default function App() {
                 placeholder="Título"
                 value={form.titulo}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    titulo: e.target.value,
-                  })
+                  setForm({ ...form, titulo: e.target.value })
                 }
                 required
               />
@@ -332,10 +312,7 @@ export default function App() {
                 placeholder="Autor"
                 value={form.autor}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    autor: e.target.value,
-                  })
+                  setForm({ ...form, autor: e.target.value })
                 }
                 required
               />
@@ -344,10 +321,7 @@ export default function App() {
                 placeholder="Ano"
                 value={form.ano}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    ano: e.target.value,
-                  })
+                  setForm({ ...form, ano: e.target.value })
                 }
               />
 
@@ -355,10 +329,7 @@ export default function App() {
                 placeholder="Gênero"
                 value={form.genero}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    genero: e.target.value,
-                  })
+                  setForm({ ...form, genero: e.target.value })
                 }
               />
 
@@ -379,6 +350,10 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <footer className="footer">
+        Desenvolvido por Lisboa Paulo Cossa
+      </footer>
     </div>
   );
 }
